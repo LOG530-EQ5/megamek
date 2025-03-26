@@ -809,9 +809,26 @@ public class Server implements Runnable {
      * Adds a new player to the game
      */
     private Player addNewPlayer(int connId, String name, boolean isBot) {
-        int team = getTeam(isBot);
+        Player newPlayer = createPlayer(connId, name, isBot);
+
+        getGame().addPlayer(connId, newPlayer);
+        validatePlayerInfo(connId);
+        return newPlayer;
+    }
+
+    private Player createPlayer(int connId, String name, boolean isBot) {
         Player newPlayer = new Player(connId, name);
         newPlayer.setBot(isBot);
+
+        PlayerColour colour = getPlayerColour(newPlayer);
+
+        newPlayer.setColour(colour);
+        newPlayer.setCamouflage(new Camouflage(Camouflage.COLOUR_CAMOUFLAGE, colour.name()));
+        newPlayer.setTeam(Math.min(getTeam(isBot), 5));
+        return newPlayer;
+    }
+
+    private PlayerColour getPlayerColour(Player newPlayer) {
         PlayerColour colour = newPlayer.getColour();
         final PlayerColour[] colours = PlayerColour.values();
         for (Player player : getGame().getPlayersList()) {
@@ -823,12 +840,7 @@ public class Server implements Runnable {
                 colour = colours[colour.ordinal() + 1];
             }
         }
-        newPlayer.setColour(colour);
-        newPlayer.setCamouflage(new Camouflage(Camouflage.COLOUR_CAMOUFLAGE, colour.name()));
-        newPlayer.setTeam(Math.min(team, 5));
-        getGame().addPlayer(connId, newPlayer);
-        validatePlayerInfo(connId);
-        return newPlayer;
+        return colour;
     }
 
     private int getTeam(boolean isBot) {
