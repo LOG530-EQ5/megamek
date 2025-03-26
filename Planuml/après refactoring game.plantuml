@@ -1,0 +1,256 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+
+class Game #LightYellow {
+  + Game(): 
+  - orbitalBombardmentAttacks: Vector<OrbitalBombardment>
+  - flares: Vector<Flare>
+  - victoryContext: HashMap<String, Object>
+  - lastPhase: GamePhase
+  - forceVictory: boolean
+  - illuminatedPositions: HashSet<Coords>
+  - endImmediately: boolean
+  - controlRolls: Vector<PilotingRollData>
+  - externalGameId: int
+  - ignorePlayerDefeatVotes: boolean
+  - mapSettings: MapSettings
+  - planetaryConditions: PlanetaryConditions
+  - options: IGameOptions
+  - minefields: Hashtable<Coords, Vector<Minefield>>
+  + version: Version
+  - attacks: Vector<AttackHandler>
+  - smokeCloudList: List<SmokeCloud>
+  - vibrabombs: Vector<Minefield>
+  - botSettings: Map<String, BehaviorSettings>
+  - turnVector: Vector<GameTurn>
+  - victoryPlayerId: int
+  - victoryTeam: int
+  - phase: GamePhase
+  + insertNextTurn(GameTurn): void
+  + processGameEvent(GameEvent): void
+  + setEntity(int, Entity): void
+  + getEntities(Coords, boolean): Iterator<Entity>
+  + addSmokeCloud(SmokeCloud): void
+  + isEntityStranded(Entity): boolean
+  + removeVibrabomb(Minefield): void
+  + getTeamEntities(Team): Iterator<Entity>
+  + removeEntity(int, int): void
+  + playerForPlayername(String): Optional<Player>
+  + addControlRoll(PilotingRollData): void
+  + insertTurnAfter(GameTurn, int): void
+  + addInitiativeRerollRequest(Team): void
+  + addReports(List<Report>): void
+  + getC3NetworkMembers(Entity): Vector<Entity>
+  + getNbrMinefields(Coords): int
+  + getNextEntity(int): Entity?
+  + addEntities(List<Entity>): void
+  + replaceUnits(List<InGameObject>): void
+  + resetExtremeGravityPSRs(Entity): void
+  + removeEmptySmokeClouds(): void
+  + resetControlRolls(Entity): void
+  + getEntityOrThrow(int): Entity
+  + getSelectedEntities(EntitySelector): Iterator<Entity>
+  - checkPositionCacheConsistency(): void
+  + getFirstEnemyEntity(Coords, Entity): Entity?
+  + getNextEntityNum(GameTurn, int): int
+  + resetRams(): void
+  - isIdUsed(int): boolean
+  + resetArtilleryAttacks(): void
+  + resetPSRs(Entity): void
+  + removeMinefieldHelper(Minefield): void
+  + getPrevEntityNum(GameTurn, int): int
+  + ageFlares(): Vector<Report>
+  - updatePlayer(Player): void
+  + addVibrabomb(Minefield): void
+  + addEntity(Entity): void
+  + getNemesisTargets(Entity, Coords): Enumeration<Entity>
+  + getProtoMeksLeft(int): int
+  + getPlayerRetreatedEntities(Player): ArrayList<Entity>
+  + clearIlluminatedPositions(): void
+  + getLiveEntitiesOwnedBy(Player): int
+  + getGunEmplacements(Coords): Vector<GunEmplacement>
+  + addFlare(Flare): void
+  + getFriendlyEntities(Coords, Entity): Iterator<Entity>
+  + getAllOffboardEnemyEntities(Player): List<Entity>
+  + getTurnForPlayer(int): GameTurn?
+  + resetCharges(): void
+  + resetPSRs(): void
+  + hasRooftopGunEmplacement(Coords): boolean
+  + isOutOfGame(int): boolean
+  + getLiveCommandersOwnedBy(Player): int
+  + addPSR(PilotingRollData): void
+  + updateEntityPositionLookup(Entity, HashSet<Coords>): void
+  - reindexEntities(List<Entity>): void
+  + resetControlRolls(): void
+  + rollInitAndResolveTies(): void
+  + getEntitiesVector(Coords, boolean): List<Entity>
+  + createVictoryConditions(): void
+  + getFirstEntityNum(GameTurn): int
+  + getPlayerEntities(Player, boolean): ArrayList<Entity>
+  + containsVibrabomb(Minefield): boolean
+  + reset(): void
+  + handleInitiativeCompensation(): void
+  + addCharge(AttackAction): void
+  + **end(int, int): void**
+  + resetMinefieldDensity(Vector<Minefield>): void
+  + getC3SubNetworkMembers(Entity): Vector<Entity>
+  + setEntity(int, Entity, Vector<UnitLocation>): void
+  + removeEntities(List<Integer>, int): void
+  + addPlayer(int, Player): void
+  + removeSmokeClouds(List<SmokeCloud>): void
+  + getSelectedOutOfGameEntities(EntitySelector): Enumeration<Entity>
+  + getEntities(Coords): Iterator<Entity>
+  + isPlayerVictor(Player): boolean
+  + containsMinefield(Coords): boolean
+  + getNextDeployableEntityNum(GameTurn, int): int
+  + cancelVictory(): void
+  + addEntity(int, Entity): void
+  + resetTeleMissileAttacks(): void
+  + addTagInfo(TagInfo): void
+  + getFirstDeployableEntityNum(GameTurn): int
+  + getPlayerEntityIds(Player, boolean): ArrayList<Integer>
+  + getValidTargets(Entity): List<Entity>
+  + getMeksLeft(int): int
+  + setPlayer(int, Player): void
+  + getTarget(int, int): Targetable?
+  + idForPlayername(String): Optional<Integer>
+  + addMinefields(Vector<Minefield>): void
+  + getLiveDeployedEntitiesOwnedBy(Player): int
+  + getPreviousEntityFromList(Entity): Entity
+  + getMinefields(Coords): Vector<Minefield>
+  + addMinefield(Minefield): void
+  + getFirstEntity(Coords): Entity?
+  + useVectorMove(): boolean
+  + getSelectedEntityCount(EntitySelector): int
+  + addAttack(AttackHandler): void
+  + getNextEntityFromList(Entity): Entity
+  + getSelectedOutOfGameEntityCount(EntitySelector): int
+  + isOutOfGame(Entity): boolean
+  + removeFirstTurnFor(Entity): GameTurn?
+  + addExtremeGravityPSR(PilotingRollData): void
+  + removePlayer(int): void
+  + getEntityPositions(Entity): HashSet<Coords>
+  + resetExtremeGravityPSRs(): void
+  + getAffaTarget(Coords, Entity): Entity?
+  + clearAllReports(): void
+  + getAllEnemyEntities(Entity): Iterator<Entity>
+  + getEntity(int): Entity?
+  + swapTurnOrder(int, int): void
+  + hasTacticalGenius(Player): boolean
+  - resetEntityPositionLookup(): void
+  + getEntitiesVector(Coords): List<Entity>
+  + checkForValidNonInfantryAndOrProtoMeks(int): boolean
+  - filterToEntity(Collection<BTObject>): List<Entity>
+  + removeMinefield(Minefield): void
+  + getNewReport(int): ReportEntry
+  + resetOrbitalBombardmentAttacks(): void
+  + addIlluminatedPosition(Coords): boolean
+  + checkForValidSpaceStations(int): boolean
+  + checkForValidSmallCraft(int): boolean
+  # addMinefieldHelper(Minefield): void
+  + getVehiclesLeft(int): int
+  # clearMinefieldsHelper(): void
+  + getEnemyEntities(Coords, Entity): Iterator<Entity>
+  + getEntityFromAllSources(int): Entity
+  + checkForValidDropShips(int): boolean
+  + removeAttack(AttackHandler): void
+  + getGroundObjects(Coords, Entity): List<ICarryable>
+  + setupTeams(): void
+  + removeTurnFor(Entity): void
+  + addEntity(Entity, boolean): void
+  + addRam(AttackAction): void
+  + inGameTWEntities(): List<Entity>
+  + setTurnIndex(int, int): void
+  + getInfantryLeft(int): int
+  + getFirstEntity(GameTurn): Entity
+  - countEntitiesInCache(List<Integer>): int
+  + moveToGraveyard(int): void
+  + addTeleMissileAttack(AttackAction): void
+  + removeCompletelyDissipatedSmokeClouds(): void
+  + changeToNextTurn(): GameTurn
+  + removeSpecificEntityTurnsFor(Entity): int
+  + clearMinefields(): void
+  - removeEntityPositionLookup(Entity): void
+  + getFirstHiddenEntityNum(GameTurn): int
+  + getAllEntitiesOwnedBy(Player): int
+  + hasEntity(int): boolean
+  + getReports(int): List<Report>
+  + getNextHiddenEntityNum(GameTurn, int): int
+  - removeArtyAutoHitHexes(): void
+  + getOutOfGameEntity(int): Entity
+  + resetAttacks(): void
+  + gameTimerIsExpired(): boolean
+  + resetTagInfo(): void
+   victoryResult: VictoryResult
+   illuminatedPositions: HashSet<Coords>
+   carcassEntities: Enumeration<Entity>
+   teleMissileAttacksVector: List<AttackAction>
+   artilleryVector: Vector<ArtilleryAttackAction>
+   teleMissileAttacks: Enumeration<AttackAction>
+   options: GameOptions
+   rams: Enumeration<AttackAction>
+   turns: Enumeration<GameTurn>
+   flares: Vector<Flare>
+   orbitalBombardmentAttacks: Enumeration<OrbitalBombardment>
+   graveyard: List<InGameObject>
+   charges: Enumeration<AttackAction>
+   graveyardEntities: Enumeration<Entity>
+   offboardPlayable: boolean
+   ignorePlayerDefeatVotes: boolean
+   smokeCloudList: List<SmokeCloud>
+   phase: GamePhase
+   planetaryConditions: PlanetaryConditions
+   entitiesVector: List<Entity>
+   nextEntityId: int
+   victoryTeam: int
+   allReports: List<List<Report>>
+   minedCoords: Enumeration<Coords>
+   forceVictory: boolean
+   lastPhase: GamePhase
+   roundCount: int
+   artilleryAttacks: Enumeration<ArtilleryAttackAction>
+   vibrabombs: Vector<Minefield>
+   boardDirect: Board
+   version: Version
+   attacks: Enumeration<AttackHandler>
+   devastatedEntities: Enumeration<Entity>
+   orbitalBombardmentVector: Vector<OrbitalBombardment>
+   chargesVector: List<AttackAction>
+   tagInfo: Vector<TagInfo>
+   attacksVector: Vector<AttackHandler>
+   entities: Iterator<Entity>
+   positionMap: Hashtable<Coords, Vector<Entity>>
+   actions: Enumeration<EntityAction>
+   botSettings: Map<String, BehaviorSettings>
+   artillerySize: int
+   noOfInitiativeRerollRequests: int
+   victoryPlayerId: int
+   PSRs: Enumeration<PilotingRollData>
+   turn: GameTurn?
+   victory: VictoryHelper
+   firstEntity: Entity
+   noOfEntities: int
+   outOfGameEntitiesVector: Vector<Entity>
+   mapSettings: MapSettings
+   victoryContext: HashMap<String, Object>
+   groundObjects: Map<Coords, List<ICarryable>>
+   retreatedEntities: Enumeration<Entity>
+   endImmediately: boolean
+   turnsList: List<GameTurn>
+   UUIDString: String
+   firstEntityNum: int
+   minefields: Vector<Minefield>
+   wreckedEntities: Enumeration<Entity>
+   extremeGravityPSRs: Enumeration<PilotingRollData>
+   currentPhasePlayable: boolean
+   controlRolls: Enumeration<PilotingRollData>
+   ramsVector: List<AttackAction>
+   externalGameId: int
+   turnVector: List<GameTurn>
+   board: Board
+}
+@enduml
