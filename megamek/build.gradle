@@ -9,6 +9,7 @@ plugins {
     id 'jacoco'
     id 'java'
     id 'org.ec4j.editorconfig' version '0.1.0'
+    id "org.sonarqube" version "4.0.0.2929"
 
 }
 
@@ -33,6 +34,14 @@ sourceSets {
         resources {
             srcDirs = ['testresources']
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "MegaMek"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.token", "squ_e4265ecc152d94c221aaf3a828b61066f362c351"
     }
 }
 

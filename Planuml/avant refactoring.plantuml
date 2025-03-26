@@ -1,0 +1,456 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AbstractGame {
+  + AbstractGame(): 
+  # forces: Forces
+  # currentRound: int
+  # teams: CopyOnWriteArrayList<Team>
+  # inGameObjects: ConcurrentHashMap<Integer, InGameObject>
+  # gameListeners: Vector<GameListener>
+  # turnIndex: int
+  # groundObjects: Map<Coords, List<ICarryable>>
+  + scriptedEvents(): List<TriggeredEvent>
+  + fireGameEvent(GameEvent): void
+  + addAction(EntityAction): void
+  # deployableInGameObjects(): List<Deployable>
+  + receiveBoard(int, Board): void
+  + removeGroundObject(Coords, ICarryable): void
+  + setupDeployment(): void
+  + addScriptedEvent(TriggeredEvent): void
+  + resetTurnIndex(): void
+  + clearScriptedEvents(): void
+  + clearActions(): void
+  + hasBoard(int): boolean
+  + removeGameListener(GameListener): void
+  + hasBoardLocation(BoardLocation): boolean
+  + addPlayer(int, Player): void
+  + hasBoard(BoardLocation): boolean
+  + shouldDeployForRound(int): boolean
+  + removeActionsFor(int): void
+  + canFleeFrom(Deployable, Coords): boolean
+  + incrementCurrentRound(): void
+  + clearDeploymentThisRound(): void
+  + reset(): void
+  + lastDeploymentRound(): int
+  + setBoard(int, Board): void
+  + receiveBoards(Map<Integer, Board>): void
+  + getFleeZone(Deployable): HexArea
+  + hasBoardLocation(Coords, int): boolean
+  + getPlayer(int): Player
+  + addGameListener(GameListener): void
+  + placeGroundObject(Coords, ICarryable): void
+  + getGroundObjects(Coords): List<ICarryable>
+  + shouldDeployThisRound(): boolean
+  + removeAction(EntityAction): void
+   gameListeners: List<GameListener>
+   groundObjects: Map<Coords, List<ICarryable>>
+   turnIndex: int
+   nextEntityId: int
+   noOfTeams: int
+   currentRound: int
+   playersList: List<Player>
+   deploymentComplete: boolean
+   boards: Map<Integer, Board>
+   inGameObjects: List<InGameObject>
+   actionsVector: List<EntityAction>
+   teams: List<Team>
+   noOfPlayers: int
+   forces: Forces
+}
+class AbstractGameManager {
+  + AbstractGameManager(): 
+  # autoSaveService: AutosaveService
+  # packetHelper: GameManagerPacketHelper
+  + transmitAllPlayerUpdates(): void
+  + sendServerChat(int, String): void
+  - receivePlayerDone(Packet, int): void
+  + send(int, Packet): void
+  + autoSave(): void
+  + saveGame(String, boolean): void
+  + send(Packet): void
+  + changePhase(GamePhase): void
+  # checkReady(): void
+  + sendCurrentTurns(): void
+  # prepareForCurrentPhase(): void
+  + sendServerChat(String): void
+  # endCurrentPhase(): void
+  + handlePacket(int, Packet): void
+  + sendChat(String, String): void
+  # executeCurrentPhase(): void
+  # transmitAllPlayerDones(): void
+  + sendChat(int, String, String): void
+  # sendPhaseChange(): void
+  + incrementAndSendGameRound(): void
+  # transmitPlayerUpdate(Player): void
+  + sendSaveGame(int, String, String): void
+  # sendGhostSkipMessage(Player): void
+   autoSaveService: AutosaveService
+   emptyLobby: boolean
+   packetHelper: GameManagerPacketHelper
+}
+class Game {
+}
+interface IGame << interface >> {
+  + setupTeams(): void
+  + getInGameObjects(Collection<Integer>): List<InGameObject>
+  + incrementCurrentRound(): void
+  + addScriptedEvent(TriggeredEvent): void
+  + addGameListener(GameListener): void
+  + getNewReport(int): ReportEntry
+  + fireGameEvent(GameEvent): void
+  + removePlayer(int): void
+  + scriptedEvents(): List<TriggeredEvent>
+  + getTeamForPlayer(Player): Team
+  + getEntitiesOwnedBy(Player): int
+  + getBoard(int): Board
+  + replaceUnits(List<InGameObject>): void
+  + getEntityFromAllSources(int): InGameObject
+  + receiveBoard(int, Board): void
+  + receivePhase(GamePhase): void
+  + getInGameObject(int): Optional<InGameObject>
+  + removeGameListener(GameListener): void
+  + getPlayer(int): Player
+  + setPlayer(int, Player): void
+  + hasMoreTurns(): boolean
+  + setBoard(int, Board): void
+  + getOutOfGameUnit(int): Optional<InGameObject>
+  + addPlayer(int, Player): void
+  + receiveBoards(Map<Integer, Board>): void
+  + shouldSkipCurrentPhase(): boolean
+  + hasPlayer(int): boolean
+   teamByPlayer: Map<Integer, Integer>
+   phase: GamePhase
+   turnIndex: int
+   nextEntityId: int
+   noOfTeams: int
+   turnsList: List<PlayerTurn>
+   options: IGameOptions
+   forceVictory: boolean
+   lastPhase: GamePhase
+   currentRound: int
+   playersList: List<Player>
+   currentPhasePlayable: boolean
+   graveyard: List<InGameObject>
+   boards: Map<Integer, Board>
+   turn: PlayerTurn
+   inGameObjects: List<InGameObject>
+   board: Board
+   teams: List<Team>
+   noOfPlayers: int
+   forces: Forces
+}
+
+interface IGameManager << interface >> {
+  + saveGame(String): void
+  + sendSaveGame(int, String, String): void
+  + calculatePlayerInitialCounts(): void
+  + saveGame(String, boolean): void
+  + handleCfrPacket(ReceivedPacket): void
+  + send(int, Packet): void
+  + removeAllEntitiesOwnedBy(Player): void
+  + requestTeamChange(int, Player): void
+  + send(Packet): void
+  + handlePacket(int, Packet): void
+  + requestGameMaster(Player): void
+  + disconnect(Player): void
+  + requestTeamChangeForPlayer(int, Player): void
+  + resetGame(): void
+  + sendCurrentInfo(int): void
+  + getCommandList(Server): List<ServerCommand>
+  + addReport(ReportEntry): void
+   game: IGame
+}
+class MemberListRenderer {
+  ~ MemberListRenderer(): 
+  + getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int): Component
+}
+class PacketPump {
+  ~ PacketPump(): 
+  + run(): void
+  ~ signalEnd(): void
+}
+class Player {
+  + Player(int, String): 
+  - initialBV: int
+  - done: boolean
+  - groundObjectsToPlace: List<ICarryable>
+  - startOffset: int
+  - startingAnyNWy: int
+  - startingPos: int
+  - startingAnyNWx: int
+  - startingAnySEx: int
+  - startWidth: int
+  - colour: PlayerColour
+  - seeAll: boolean
+  - id: int
+  - ghost: boolean
+  - admitsDefeat: boolean
+  - startingAnySEy: int
+  - bot: boolean
+  - observer: boolean
+  - votedToAllowGameMaster: boolean
+  - initialEntityCount: int
+  - camouflage: Camouflage
+  - constantInitBonus: int
+  - artyAutoHitHexes: Vector<Coords>
+  - game: IGame
+  - singleBlind: boolean
+  - email: String
+  - team: int
+  - votedToAllowTeamChange: boolean
+  - name: String
+  - gameMaster: boolean
+  + hashCode(): int
+  + doesNotAdmitDefeat(): boolean
+  + addMinefield(Minefield): void
+  + containsMinefield(Minefield): boolean
+  + canIgnoreDoubleBlind(): boolean
+  + removeMinefield(Minefield): void
+  + removeArtyAutoHitHexes(): void
+  + canSeeAll(): boolean
+  + isMyUnit(InGameObject): boolean
+  + copy(): Player
+  + removeMinefields(): void
+  + toString(): String
+  + admitsDefeat(): boolean
+  + hasMinefields(): boolean
+  + equals(Object): boolean
+  + addMinefields(Vector<Minefield>): void
+  + canSeeSingleBlind(): boolean
+  + isEnemyOf(Player): boolean
+  + adjustStartingPosForReinforcements(): void
+  + addArtyAutoHitHex(Coords): void
+  + changeInitialBV(int): void
+  + isGameMaster(): boolean
+  + changeInitialEntityCount(int): void
+  + redactPrivateData(): void
+   startOffset: int
+   seeAll: boolean
+   seeAllPermitted: boolean
+   done: boolean
+   turnInitBonus: int
+   notObserver: boolean
+   startingPos: int
+   votedToAllowGameMaster: boolean
+   admitsDefeat: boolean
+   initialEntityCount: int
+   observer: boolean
+   colorForPlayer: String
+   BV: int
+   gameMasterPermitted: boolean
+   email: String
+   startingAnyNWx: int
+   game: IGame
+   groundObjectsToPlace: List<ICarryable>
+   startWidth: int
+   fleeZone: HexArea
+   startingAnySEx: int
+   singleBlindPermitted: boolean
+   nbrMFCommand: int
+   singleBlind: boolean
+   nbrMFInferno: int
+   nbrMFConventional: int
+   initialBV: int
+   votedToAllowTeamChange: boolean
+   camouflage: Camouflage
+   colour: PlayerColour
+   ghost: boolean
+   nbrMFVibra: int
+   bot: boolean
+   gameMaster: boolean
+   id: int
+   initCompensationBonus: int
+   name: String
+   minefields: Vector<Minefield>
+   startingAnyNWy: int
+   nbrMFActive: int
+   coloredPlayerNameWithTeam: String
+   artyAutoHitHexes: Vector<Coords>
+   constantInitBonus: int
+   team: int
+   startingAnySEy: int
+   commandBonus: int
+}
+class ReceivedPacket {
+  + ReceivedPacket(int, Packet): 
+  - connectionId: int
+  - packet: Packet
+   connectionId: int
+   packet: Packet
+}
+interface Serializable << interface >>
+class Server {
+  + Server(String, int, IGameManager, boolean, String, EmailService, boolean): 
+  + Server(String, int, IGameManager, boolean, String): 
+  + Server(String, int, IGameManager): 
+  - gameManager: IGameManager
+  - dedicated: boolean
+  - serverInstance: Server
+  - createMotd(): String
+  - processCommand(int, String): void
+  - transmitAllPlayerUpdates(): void
+  + run(): void
+  - addNewPlayer(int, String, boolean): Player
+  + loadGame(File): boolean
+  + getPlayer(int): Player
+  + requestTeamChangeForPlayer(int, Player): void
+  + passwordMatches(Object): boolean
+  + sendSaveGame(int, String, String): void
+  + getPendingConnection(int): AbstractConnection
+  - sendToPending(int, Packet): void
+  ~ clientVersionCheck(int): void
+  + remapConnIds(Map<String, Integer>, Map<Integer, String>): void
+  - registerCommand(ServerCommand): void
+  - receivePlayerInfo(Packet, int): void
+  ~ transmitPlayerUpdate(Player): void
+  + requestTeamChange(int, Player): void
+  + sendServerChat(int, String): void
+  + sendLoadGame(int, String): void
+  + validatePlayerName(String): String
+  + sendChat(int, String, String): void
+  + isPassword(Object): boolean
+  - getTeam(boolean): int
+  ~ disconnected(Player): void
+  ~ send(Packet): void
+  - correctDupeName(String): String
+  + validatePlayerInfo(int): void
+  + requestGameMaster(Player): void
+  + validateServerAddress(String): String
+  - wargamesResponse(): void
+  + forEachConnection(Consumer<AbstractConnection>): void
+  + getCommand(String): ServerCommand
+  - removeAllEntitiesOwnedBy(Player): void
+  - transmitPlayerConnect(Player): void
+  + sendChat(String, String): void
+  - getClient(int): AbstractConnection
+  - wargamesAttack(int, int): void
+  - receivePlayerName(Packet, int): void
+  + formatChatMessage(String, String): String
+  + send(int, Packet): void
+  - transmitPlayerConnect(AbstractConnection): void
+  + die(): void
+  + saveGame(String): void
+  - createPlayerConnectPacket(Player, boolean): Packet
+  + sendServerChat(String): void
+  + loadGame(File, boolean): boolean
+  + getConnection(int): AbstractConnection
+  + validatePassword(String): String?
+  - registerWithServerBrowser(boolean, String): void
+  + resetGame(): void
+  + sendCurrentInfo(int): void
+  - receivePlayerVersion(Packet, int): boolean
+  + reportRoll(Roll): void
+  + validatePort(int): int
+  # handle(int, Packet): void
+   freeConnectionId: int
+   host: String
+   port: int
+   dedicated: boolean
+   game: IGame
+   allCommandNames: Collection<String>
+   gameManager: IGameManager
+   freeEntityId: int
+   passworded: boolean
+   serverInstance: Server
+   emailService: EmailService
+}
+enum TOMCOLS << enumeration >> {
+  + TOMCOLS(): 
+  + values(): TOMCOLS[]
+  + valueOf(String): TOMCOLS
+}
+class Team {
+  + Team(int): 
+  - faction: String
+  - id: int
+  + getMultiTurns(IGame): int
+  + getInitCompensationBonus(boolean): int
+  + players(): List<Player>
+  + addPlayer(Player): void
+  + equals(Object): boolean
+  + toString(): String
+  + getTotalInitBonus(boolean): int
+  + isEnemyOf(Team): boolean
+  + clearInitiative(boolean): void
+  + determineTeamOrder(Game): TurnVectors
+  + hasPlayer(Player): boolean
+  + nonObserverPlayers(): List<Player>
+  + getNextValidPlayer(Player, Game): Player
+  + size(): int
+  + getNormalTurns(IGame): int
+  + hashCode(): int
+   evenTurns: int
+   empty: boolean
+   aeroTurns: int
+   warshipTurns: int
+   spaceStationTurns: int
+   faction: String
+   nonObserverSize: int
+   id: int
+   initCompensationBonus: int
+   dropshipTurns: int
+   jumpshipTurns: int
+   teleMissileTurns: int
+   smallCraftTurns: int
+   observerTeam: boolean
+   otherTurns: int
+}
+class TeamOverviewModel {
+  + TeamOverviewModel(): 
+  - seeTeam(int): boolean
+  + getColumnClass(int): Class<?>
+  + updateTable(Game): void
+  + clearData(): void
+  + getColumnName(int): String
+  - updateRowHeights(): void
+  - classIndex(Entity): int
+  - relativeValue(ArrayList<Long>, int): String
+  - unitSummary(int[], boolean[], boolean[]): String
+  + getValueAt(int, int): Object
+   rowCount: int
+   columnCount: int
+}
+class TeamOverviewPanel {
+  + TeamOverviewPanel(ClientGUI): 
+  - isDetached: boolean
+  + refreshData(): void
+  + refreshTableHeader(): void
+   isDetached: boolean
+}
+
+AbstractGame         -[#008200,dashed]-^  IGame               
+AbstractGame        "1" *-[#595959,plain]-> "players\n*" Player              
+AbstractGame        "1" *-[#595959,plain]-> "teams\n*" Team                
+AbstractGameManager  -[#008200,dashed]-^  IGameManager        
+Game                 -[#000082,plain]-^  AbstractGame        
+Game                 -[#008200,dashed]-^  Serializable        
+Game                "1" *-[#595959,plain]-> "initiativeRerollRequests\n*" Team                
+Game                 -[#595959,dashed]->  Team                : "«create»"
+MemberListRenderer   -[#008200,dashed]-^  Serializable        
+MemberListRenderer   +-[#820000,plain]-  TeamOverviewPanel   
+PacketPump           +-[#820000,plain]-  Server              
+Player              "1" *-[#595959,plain]-> "game\n1" IGame               
+Player               -[#008200,dashed]-^  Serializable        
+ReceivedPacket       +-[#820000,plain]-  Server              
+Server              "1" *-[#595959,plain]-> "gameManager\n1" IGameManager        
+Server              "1" *-[#595959,plain]-> "packetPump\n1" PacketPump          
+Server               -[#595959,dashed]->  PacketPump          : "«create»"
+Server               -[#595959,dashed]->  Player              : "«create»"
+Server              "1" *-[#595959,plain]-> "packetQueue\n*" ReceivedPacket      
+Server               -[#595959,dashed]->  ReceivedPacket      : "«create»"
+TOMCOLS              -[#008200,dashed]-^  Serializable        
+TOMCOLS              +-[#820000,plain]-  TeamOverviewPanel   
+Team                "1" *-[#595959,plain]-> "players\n*" Player              
+Team                 -[#008200,dashed]-^  Serializable        
+TeamOverviewModel    -[#008200,dashed]-^  Serializable        
+TeamOverviewModel   "1" *-[#595959,plain]-> "teams\n*" Team                
+TeamOverviewModel    +-[#820000,plain]-  TeamOverviewPanel   
+TeamOverviewPanel    -[#595959,dashed]->  MemberListRenderer  : "«create»"
+TeamOverviewPanel    -[#008200,dashed]-^  Serializable        
+TeamOverviewPanel   "1" *-[#595959,plain]-> "teamOverviewModel\n1" TeamOverviewModel   
+TeamOverviewPanel    -[#595959,dashed]->  TeamOverviewModel   : "«create»"
+@enduml
