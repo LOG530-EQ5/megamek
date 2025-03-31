@@ -26,8 +26,7 @@ public class ServerTest {
     @BeforeEach
     void setUp() throws IOException {
         TWGameManager gameManager = new TWGameManager();
-
-        server = new Server("1234",2,gameManager); // Adjusted to match constructor requiring a port number
+        server = new Server("1234",2,gameManager);
     }
 
     @Test
@@ -41,9 +40,7 @@ public class ServerTest {
         assertEquals(playerName, newPlayer.getName());
         assertEquals(connId, newPlayer.getId());
         assertFalse(newPlayer.isBot());
-
         assertNotNull(newPlayer.getColour());
-
         assertTrue(newPlayer.getTeam() >= 0 && newPlayer.getTeam() <= 5);
     }
 
@@ -51,12 +48,9 @@ public class ServerTest {
     void testGetPlayerColour() throws RemoteException {
         Player existingPlayer = new Player(1, "Existing");
         existingPlayer.setColour(PlayerColour.RED);
-
         Player testPlayer = new Player(2, "New");
         testPlayer.setColour(PlayerColour.RED);
-
         server.getGame().addPlayer(existingPlayer.getId(), existingPlayer);
-
         PlayerColour assigned = server.getPlayerColour(testPlayer);
 
         assertEquals(PlayerColour.GREEN, assigned);
