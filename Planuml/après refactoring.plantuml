@@ -262,7 +262,7 @@ class TeamOverviewModel #LightYellow {
   + TeamOverviewModel(): 
   - seeTeam(int): boolean
   + getColumnClass(int): Class<?>
-  + updateTable(Game): void
+  + **updateTable(Game): void**
   + clearData(): void
   + getColumnName(int): String
   - updateRowHeights(): void
@@ -270,7 +270,8 @@ class TeamOverviewModel #LightYellow {
   - relativeValue(ArrayList<Long>, int): String
   - unitSummary(int[], boolean[], boolean[]): String
   + getValueAt(int, int): Object
-  - **getTeamInfo(Game): void **
+  - **processTeams(Game): void **
+  - **processPlayers(Game, Teams, int[], boolean[], boolean[])
    rowCount: int
    columnCount: int
 }
