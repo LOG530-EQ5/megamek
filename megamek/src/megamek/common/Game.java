@@ -37,6 +37,7 @@ import megamek.server.SmokeCloud;
 import megamek.server.props.OrbitalBombardment;
 import megamek.server.victory.VictoryHelper;
 import megamek.server.victory.VictoryResult;
+import megamek.server.EloManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -125,6 +126,8 @@ public final class Game extends AbstractGame implements Serializable, PlanetaryC
     private HashSet<Coords> illuminatedPositions = new HashSet<>();
 
     private HashMap<String, Object> victoryContext = null;
+
+    private EloManager eloManager = new EloManager(new EloStrategie(32));
 
     // internal integer value for an external game id link
     private int externalGameId = 0;
