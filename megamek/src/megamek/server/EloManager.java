@@ -1,5 +1,8 @@
 package megamek.server;
 
+import megamek.common.Player;
+import megamek.common.Team;
+import megamek.server.ITournamentScoreStrategie;
 import java.util.List;
 
 public class EloManager {
@@ -9,10 +12,10 @@ public class EloManager {
         this.eloStrategie = eloStrategie;
     }
 
-    public void updateEloTeamPlayers(List<Teams> teams, int winningTeam) {
+    public void updateEloTeamPlayers(List<Team> teams, int winningTeam) {
         if (teams.size() == 2) {
-            Teams team1 = teams.get(0);
-            Teams team2 = teams.get(1);
+            Team team1 = teams.get(0);
+            Team team2 = teams.get(1);
 
             int[] updatedScores;
             if (team1.getId() == winningTeam) {
