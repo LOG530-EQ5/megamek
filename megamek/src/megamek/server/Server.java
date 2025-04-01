@@ -823,7 +823,7 @@ public class Server implements Runnable {
      * @param isBot Boolean to know if the new player is a bot are not.
      * @return the PLayer created.
      */
-    private Player createPlayer(int connId, String name, boolean isBot) {
+    public Player createPlayer(int connId, String name, boolean isBot) {
         Player newPlayer = new Player(connId, name);
         newPlayer.setBot(isBot);
 
@@ -840,7 +840,7 @@ public class Server implements Runnable {
      * @param playerNeedColour a player that need is colour.
      * @return return à PlayerColour that correspond to the colour of the new player.
      */
-    private PlayerColour getPlayerColour(Player playerNeedColour) {
+    public PlayerColour getPlayerColour(Player playerNeedColour) {
         PlayerColour colour = playerNeedColour.getColour();
         final PlayerColour[] colours = PlayerColour.values();
         for (Player player : getGame().getPlayersList()) {
