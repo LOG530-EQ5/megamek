@@ -37,6 +37,7 @@ import megamek.server.SmokeCloud;
 import megamek.server.props.OrbitalBombardment;
 import megamek.server.victory.VictoryHelper;
 import megamek.server.victory.VictoryResult;
+import megamek.server.EloStrategie;
 import megamek.server.EloManager;
 
 import java.io.Serializable;

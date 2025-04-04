@@ -1,4 +1,6 @@
-public class EloStrategie extends ITournamentScoreStrategie {
+package megamek.server;
+
+public class EloStrategie implements ITournamentScoreStrategie {
     public int kFactor = 32;
 
     public EloStrategie(int kFactor) {
