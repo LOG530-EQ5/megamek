@@ -1,7 +1,8 @@
 public class EloStrategie extends ITournamentScoreStrategie {
+    public int kFactor = 32;
 
     public EloStrategie(int kFactor) {
-        super(kFactor);
+        this.kFactor = kFactor;
     }
 
     @Override
