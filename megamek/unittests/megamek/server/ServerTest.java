@@ -26,7 +26,7 @@ public class ServerTest {
     @BeforeEach
     void setUp() throws IOException {
         TWGameManager gameManager = new TWGameManager();
-        server = new Server("1234",2,gameManager);
+        server = new Server("1234",0,gameManager);
     }
 
     @Test
