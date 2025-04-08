@@ -809,13 +809,42 @@ public class Server implements Runnable {
      * Adds a new player to the game
      */
     private Player addNewPlayer(int connId, String name, boolean isBot) {
-        int team = getTeam(isBot);
+        Player newPlayer = createPlayer(connId, name, isBot);
+
+        getGame().addPlayer(connId, newPlayer);
+        validatePlayerInfo(connId);
+        return newPlayer;
+    }
+
+    /**
+     * Creation of a plauer is connected to the serveur
+     * @param connId int connection identifier.
+     * @param name String name of the player to create.
+     * @param isBot Boolean to know if the new player is a bot are not.
+     * @return the PLayer created.
+     */
+    public Player createPlayer(int connId, String name, boolean isBot) {
         Player newPlayer = new Player(connId, name);
         newPlayer.setBot(isBot);
-        PlayerColour colour = newPlayer.getColour();
+
+        PlayerColour colour = getPlayerColour(newPlayer);
+
+        newPlayer.setColour(colour);
+        newPlayer.setCamouflage(new Camouflage(Camouflage.COLOUR_CAMOUFLAGE, colour.name()));
+        newPlayer.setTeam(Math.min(getTeam(isBot), 5));
+        return newPlayer;
+    }
+
+    /**
+     * get the colour for a player with no colours
+     * @param playerNeedColour a player that need is colour.
+     * @return return à PlayerColour that correspond to the colour of the new player.
+     */
+    public PlayerColour getPlayerColour(Player playerNeedColour) {
+        PlayerColour colour = playerNeedColour.getColour();
         final PlayerColour[] colours = PlayerColour.values();
         for (Player player : getGame().getPlayersList()) {
-            if (player.getId() == newPlayer.getId()) {
+            if (player.getId() == playerNeedColour.getId()) {
                 continue;
             }
 
@@ -823,12 +852,7 @@ public class Server implements Runnable {
                 colour = colours[colour.ordinal() + 1];
             }
         }
-        newPlayer.setColour(colour);
-        newPlayer.setCamouflage(new Camouflage(Camouflage.COLOUR_CAMOUFLAGE, colour.name()));
-        newPlayer.setTeam(Math.min(team, 5));
-        getGame().addPlayer(connId, newPlayer);
-        validatePlayerInfo(connId);
-        return newPlayer;
+        return colour;
     }
 
     private int getTeam(boolean isBot) {
