@@ -220,55 +220,69 @@ public class TeamOverviewPanel extends JPanel {
         public void updateTable(Game game) {
             clearData();
             for (Team team : game.getTeams()) {
-                teams.add(team);
-                teamID.add(team.getId());
-                teamNames.add(team.toString());
-
-                long cost = 0;
-                double ton = 0;
-                int bv = 0;
-                int[] unitCounts = { 0, 0, 0, 0, 0 };
-                int hiddenBv = 0;
-                boolean[] unitCritical = { false, false, false, false, false };
-                boolean[] unitWarnings = { false, false, false, false, false };
-                for (Player teamMember : team.players()) {
-                    // Get the "real" player object, as the team's may be wrong
-                    Player player = game.getPlayer(teamMember.getId());
-                    bv += player.getBV();
-                    for (Entity entity : game.getPlayerEntities(player, false)) {
-                        // Avoid counting fighters in squadrons twice
-                        if (entity instanceof FighterSquadron) {
-                            continue;
-                        }
-                        cost += (long) entity.getCost(false);
-                        ton += entity.getWeight();
-                        unitCounts[classIndex(entity)]++;
-                        int mapType = clientGui.getClient().getMapSettings().getMedium();
-                        if ((entity.getGame().getPlanetaryConditions().whyDoomed(entity, entity.getGame()) != null)
-                                || (entity.doomedInAtmosphere() && mapType == MapSettings.MEDIUM_ATMOSPHERE)
-                                || (entity.doomedOnGround() && mapType == MapSettings.MEDIUM_GROUND)
-                                || (entity.doomedInSpace() && mapType == MapSettings.MEDIUM_SPACE)
-                                || (!entity.isDesignValid())) {
-                            unitCritical[classIndex(entity)] = true;
-                        }
-                        if (((entity.hasC3i() || entity.hasNavalC3()) && (entity.calculateFreeC3Nodes() == 5))
-                                || ((entity.getC3Master() == null) && entity.hasC3S())) {
-                            unitWarnings[classIndex(entity)] = true;
-                        }
-                        if (entity.isHidden()) {
-                            hiddenBv += entity.calculateBattleValue();
-                        }
-                    }
-                }
-                units.add(unitSummary(unitCounts, unitCritical, unitWarnings));
-                bvs.add((long) bv);
-                hidden.add(bv != 0 ? (double) hiddenBv / bv : 0);
-                costs.add(cost);
-                tons.add((long) (ton * 1000));
+                processTeams(game, team);
             }
             teamOverviewTable.clearSelection();
             fireTableDataChanged();
             updateRowHeights();
+        }
+
+        private void processTeams(Game game, Team team) {
+            teams.add(team);
+            teamID.add(team.getId());
+            teamNames.add(team.toString());
+
+            long cost = 0;
+            double ton = 0;
+            int bv = 0;
+            int[] unitCounts = { 0, 0, 0, 0, 0 };
+            int hiddenBv = 0;
+            boolean[] unitCritical = { false, false, false, false, false };
+            boolean[] unitWarnings = { false, false, false, false, false };
+
+            for (Player teamMember : team.players()) {
+                processPlayers(game, teamMember, unitCounts, unitCritical, unitWarnings);
+                Player player = game.getPlayer(teamMember.getId());
+                bv += player.getBV();
+                for (Entity entity : game.getPlayerEntities(player, false)) {
+                    if (entity instanceof FighterSquadron) {
+                        continue;
+                    }
+                    cost += (long) entity.getCost(false);
+                    ton += entity.getWeight();
+                    if (entity.isHidden()) {
+                        hiddenBv += entity.calculateBattleValue();
+                    }
+                }
+            }
+
+            units.add(unitSummary(unitCounts, unitCritical, unitWarnings));
+            bvs.add((long) bv);
+            hidden.add(bv != 0 ? (double) hiddenBv / bv : 0);
+            costs.add(cost);
+            tons.add((long) (ton * 1000));
+        }
+
+        private void processPlayers(Game game, Player teamMember, int[] unitCounts, boolean[] unitCritical, boolean[] unitWarnings) {
+            Player player = game.getPlayer(teamMember.getId());
+            for (Entity entity : game.getPlayerEntities(player, false)) {
+                if (entity instanceof FighterSquadron) {
+                    continue;
+                }
+                unitCounts[classIndex(entity)]++;
+                int mapType = clientGui.getClient().getMapSettings().getMedium();
+                if ((entity.getGame().getPlanetaryConditions().whyDoomed(entity, entity.getGame()) != null)
+                        || (entity.doomedInAtmosphere() && mapType == MapSettings.MEDIUM_ATMOSPHERE)
+                        || (entity.doomedOnGround() && mapType == MapSettings.MEDIUM_GROUND)
+                        || (entity.doomedInSpace() && mapType == MapSettings.MEDIUM_SPACE)
+                        || (!entity.isDesignValid())) {
+                    unitCritical[classIndex(entity)] = true;
+                }
+                if (((entity.hasC3i() || entity.hasNavalC3()) && (entity.calculateFreeC3Nodes() == 5))
+                        || ((entity.getC3Master() == null) && entity.hasC3S())) {
+                    unitWarnings[classIndex(entity)] = true;
+                }
+            }
         }
 
         private int classIndex(Entity entity) {
